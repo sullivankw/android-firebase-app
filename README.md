@@ -14,3 +14,4 @@
 * Could handle image upload failures/resumes better
 * regex to prevent non numbers in age field  
 * validate incoming method params more thoroughly
+* simplify sorting logic
