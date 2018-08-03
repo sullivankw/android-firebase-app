@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "715733481930",
+    "firebase_url": "https://testfirebase-4bf45.firebaseio.com",
+    "project_id": "testfirebase-4bf45",
+    "storage_bucket": "testfirebase-4bf45.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715733481930:android:4e8070569282af24",
+        "android_client_info": {
+          "package_name": "com.apps.ksullivan.firstfirebaseapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "715733481930-4vak1f9lc4nr4ts83flnu6gir6e90cr0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPM0MfvoUaSOg0bkM_c79invVmszWIjHE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
