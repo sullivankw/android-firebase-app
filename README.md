@@ -12,3 +12,5 @@
 * viewing a sorted and/or filtered list that wouldn't include the made change in that sorted and/or filtered query
 * then the onDataChange callback is triggered and we are forced back to viewing the default list
 * Could handle image upload failures/resumes better
+* regex to prevent non numbers in age field  
+* validate incoming method params more thoroughly
