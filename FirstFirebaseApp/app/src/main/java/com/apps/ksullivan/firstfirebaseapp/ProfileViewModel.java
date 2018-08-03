@@ -17,7 +17,7 @@ public class ProfileViewModel extends ViewModel {
     private String imageId;
     private Gender gender;
     private String name;
-    private String age;
+    private int age;
     private List<String> hobbies;
     private MutableLiveData<Profile> profile;
     private boolean isHiker;
@@ -38,7 +38,7 @@ public class ProfileViewModel extends ViewModel {
     }
 
     public void setProfile() {
-        if (imageId != null && gender != null && name != null && age != null && !CollectionUtils.isEmpty(hobbies))  {
+        if (imageId != null && gender != null && name != null && age != 0 && !CollectionUtils.isEmpty(hobbies))  {
             profile.setValue(new Profile(id, gender, name, age, hobbies, imageId));
         }
     }
@@ -66,11 +66,11 @@ public class ProfileViewModel extends ViewModel {
         this.name = name;
     }
 
-    public String getAge() {
+    public int getAge() {
         return age;
     }
 
-    public void setAge(String age) {
+    public void setAge(int age) {
         this.age = age;
     }
 
@@ -113,7 +113,7 @@ public class ProfileViewModel extends ViewModel {
         clearHobbies();
         setGender(null);
         setName(null);
-        setAge(null);
+        setAge(0);
         setImageId(null);
         setBytes(null);
         setId(null);

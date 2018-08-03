@@ -10,7 +10,7 @@ public class Profile implements Serializable {
     private String id;
     private Gender gender;
     private String name;
-    private String age;
+    private int age;
 
     private List<String> hobbies;
     private String imageId;
@@ -24,7 +24,7 @@ public class Profile implements Serializable {
     public Profile() {
     }
 
-    public Profile(String id, Gender gender, String name, String age, List<String> hobbies, String imageId) {
+    public Profile(String id, Gender gender, String name, int age, List<String> hobbies, String imageId) {
         this.id = id;
         this.gender = gender;
         this.name = name;
@@ -41,7 +41,7 @@ public class Profile implements Serializable {
         return name;
     }
 
-    public String getAge() {
+    public int getAge() {
         return age;
     }
 

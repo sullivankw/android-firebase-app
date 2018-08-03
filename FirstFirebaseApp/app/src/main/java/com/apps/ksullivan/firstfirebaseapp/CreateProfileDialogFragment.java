@@ -68,6 +68,7 @@ public class CreateProfileDialogFragment extends android.support.v4.app.DialogFr
         builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                //todo validate age is number
                 if (name == null || name.length() > 30
                         || age == null || age.length() > 3
                         || viewModel.getImageId() == null) {
@@ -87,7 +88,9 @@ public class CreateProfileDialogFragment extends android.support.v4.app.DialogFr
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        viewModel.setAge(age.getText().toString());
+                        // todo should validate only numbers here
+                        int intAge = Integer.parseInt(age.getText().toString());
+                        viewModel.setAge(intAge);
                         viewModel.setName(name.getText().toString());
                         if (viewModel.getGender() == null) {
                             //means the selector wasn't moved and intending male

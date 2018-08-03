@@ -194,6 +194,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         shouldReverseQuery = false;
                         setupQuery(FirebaseUtils.getAllProfiles());
                     } else {
+                        if (sortBy.equals(Sort.AgeDescending) || sortBy.equals(Sort.ReverseAlphabetical)) {
+                            shouldReverseQuery = true;
+                        }
                         shouldReverseQuery = false;
                         setupQuery(FirebaseUtils.getSortedProfiles(sortBy));
                     }
