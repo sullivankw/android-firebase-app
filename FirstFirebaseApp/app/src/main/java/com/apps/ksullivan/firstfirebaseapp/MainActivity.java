@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.linear_main);
         setupViews();
         setupRecyclerView();
-        setupQuery(null);
         setupListeners();
         setupSpinners();
         configureViewModel();
@@ -86,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     profiles.add(profile);
                 }
                 if (shouldReverseQuery) {
-                    reverseQueryOrder(profiles);
+                    adaptor.setProfilesForRecView(reverseQueryOrder(profiles));
                 } else {
                     adaptor.setProfilesForRecView(profiles);
                 }
@@ -103,13 +102,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      *
      * Method needed to sort order in reverse. Firebase doesn't allow that order to be returned from database
      */
-    private void reverseQueryOrder(List<Profile> profiles) {
+    private List<Profile> reverseQueryOrder(List<Profile> profiles) {
         List<Profile> reverseProfiles = new ArrayList<>();
 
         for (int i = profiles.size() - 1; i >= 0; i -- ) {
             reverseProfiles.add(profiles.get(i));
         }
-        adaptor.setProfilesForRecView(reverseProfiles);
+        return reverseProfiles;
     }
 
     private void setupSpinners() {
@@ -172,33 +171,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //means we have a male or female to filter by
                     if (sortBy == null) {
                         shouldReverseQuery = false;
-                        setupQuery(FirebaseUtils.getProfilesByGender(genderFilter.getItem()));
+                        viewModel.setCurrentQuery(FirebaseUtils.getProfilesByGender(genderFilter.getItem()));
                     } else {
                         if (sortBy.equals(Sort.Alphabetical)) {
                             shouldReverseQuery = false;
-                            setupQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingName(genderFilter));
+                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingName(genderFilter));
                         } else if (sortBy.equals(Sort.ReverseAlphabetical)) {
                             shouldReverseQuery = true;
-                            setupQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingName(genderFilter));
+                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingName(genderFilter));
                         } else if (sortBy.equals(Sort.AgeAscending)) {
                             shouldReverseQuery = false;
-                            setupQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
+                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
                         } else if (sortBy.equals(Sort.AgeDescending)) {
                             shouldReverseQuery = true;
-                            setupQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
+                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
                         }
                     }
                 } else {
                     //still gotta check that sort isn't on
                     if (sortBy == null) {
                         shouldReverseQuery = false;
-                        setupQuery(FirebaseUtils.getAllProfiles());
+                        viewModel.setCurrentQuery(FirebaseUtils.getAllProfiles());
                     } else {
                         if (sortBy.equals(Sort.AgeDescending) || sortBy.equals(Sort.ReverseAlphabetical)) {
                             shouldReverseQuery = true;
                         }
                         shouldReverseQuery = false;
-                        setupQuery(FirebaseUtils.getSortedProfiles(sortBy));
+                        viewModel.setCurrentQuery(FirebaseUtils.getSortedProfiles(sortBy));
                     }
                 }
             }
@@ -220,29 +219,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         } else {
                             shouldReverseQuery = false;
                         }
-                        setupQuery(FirebaseUtils.getSortedProfiles(sortBy));
+                        viewModel.setCurrentQuery(FirebaseUtils.getSortedProfiles(sortBy));
                     } else {
                         if (sortBy.equals(Sort.Alphabetical)) {
                             shouldReverseQuery = false;
-                            setupQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingName(genderFilter));
+                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingName(genderFilter));
                         } else if (sortBy.equals(Sort.AgeAscending)) {
                             shouldReverseQuery = false;
-                            setupQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
+                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
                         } else if (sortBy.equals(Sort.ReverseAlphabetical)) {
                             shouldReverseQuery = true;
-                            setupQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingName(genderFilter));
+                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingName(genderFilter));
                         } else if (sortBy.equals(Sort.AgeDescending)) {
                             shouldReverseQuery = true;
-                            setupQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
+                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
                         }
                     }
                 } else {
                     if (genderFilter == null) {
                         shouldReverseQuery = false;
-                        setupQuery(FirebaseUtils.getAllProfiles());
+                        viewModel.setCurrentQuery(FirebaseUtils.getAllProfiles());
                     } else {
                         shouldReverseQuery = false;
-                        setupQuery(FirebaseUtils.getProfilesByGender(genderFilter.getItem()));
+                        viewModel.setCurrentQuery(FirebaseUtils.getProfilesByGender(genderFilter.getItem()));
                     }
                 }
             }
@@ -262,6 +261,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (profile != null) {
                     saveNewProfile(profile);
                     viewModel.clearViewModel();
+                }
+            }
+        });
+        viewModel.getCurrentQuery().observe(this, new Observer<Query>() {
+            @Override
+            public void onChanged(@Nullable Query query) {
+                if (query != null) {
+                    setupQuery(query);
                 }
             }
         });

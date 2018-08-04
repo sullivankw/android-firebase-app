@@ -76,7 +76,7 @@ public class ProfileDetailActivity extends AppCompatActivity implements View.OnC
         nameDetail.setText(profile.getName());
 
         ageDetail = (TextView) findViewById(R.id.displayAgeDetail);
-        ageDetail.setText(profile.getAge());
+        ageDetail.setText(String.valueOf(profile.getAge()));
 
         genderDetail = (TextView) findViewById(R.id.displayGenderDetail);
         genderDetail.setText(profile.getGender().getItem());

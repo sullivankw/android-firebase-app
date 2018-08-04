@@ -8,6 +8,7 @@ import com.apps.ksullivan.firstfirebaseapp.model.Gender;
 import com.apps.ksullivan.firstfirebaseapp.model.Hobby;
 import com.apps.ksullivan.firstfirebaseapp.model.Profile;
 import com.google.android.gms.common.util.CollectionUtils;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class ProfileViewModel extends ViewModel {
     private boolean isKayaker;
     private boolean isCycler;
     private byte[] bytes;
+    private MutableLiveData<Query> currentQuery;
     //live date is just for observers
 
     public LiveData<Profile> getProfile() {
@@ -182,5 +184,17 @@ public class ProfileViewModel extends ViewModel {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public LiveData<Query> getCurrentQuery() {
+        if (currentQuery == null) {
+            currentQuery = new MutableLiveData<>();
+            currentQuery.setValue(null);
+        }
+        return currentQuery;
+    }
+
+    public void setCurrentQuery(Query currentQuery) {
+        this.currentQuery.setValue(currentQuery);
     }
 }
