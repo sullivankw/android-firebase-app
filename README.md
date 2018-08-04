@@ -15,3 +15,4 @@
 * regex to prevent non numbers in age field  
 * validate incoming method params more thoroughly
 * simplify sorting logic
+* better abstraction.....move database calls to be managed by viewmodel
