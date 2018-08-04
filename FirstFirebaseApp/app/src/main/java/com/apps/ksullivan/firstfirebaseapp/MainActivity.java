@@ -24,7 +24,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.apps.ksullivan.firstfirebaseapp.model.ProfileAction;
-import com.apps.ksullivan.firstfirebaseapp.utils.FirebaseUtils;
 import com.apps.ksullivan.firstfirebaseapp.model.Gender;
 import com.apps.ksullivan.firstfirebaseapp.model.Profile;
 import com.apps.ksullivan.firstfirebaseapp.model.Sort;
@@ -32,7 +31,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
@@ -71,56 +69,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.linear_main);
         setupViews();
         setupRecyclerView();
-        setupListeners();
-        setupSpinners();
+        addProfileBtn.setOnClickListener(this);
+        setupSpinnerFilterAndSortingListeners();
+        populateSpinners();
         configureViewModel();
-    }
-
-    private void deleteProfile(Profile profile) {
-        if (profile.getImageId() == null) {
-            Log.d("photo-delete", "no image to delete");
-            return;
-        }
-        viewModel.deleteImageFromStorage(profile.getImageId()).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d("photo-delete", "removed image from failed profile save for id ");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Log.e("photo-delete", "unable to delete image. Would log to error queue and reprocess in prod app for");
-
-            }
-        });
-        //now delete from db
-        viewModel.deleteProfile(profile.getId()).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Log.e("profile-delete", "unable to delete profile");
-            }
-        });
-    }
-
-    private void updateProfile(Profile profile) {
-        viewModel.updateProfile(profile).addOnSuccessListener(MainActivity.this, new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Toast.makeText(MainActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
-
-            }
-        })
-                .addOnFailureListener(MainActivity.this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(MainActivity.this, "Profile cannot be added", Toast.LENGTH_SHORT).show();
-                    }
-                });
     }
 
     private void setupQuery(Query query) {
@@ -152,42 +104,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    /****
-     *
-     * Method needed to sort order in reverse. Firebase doesn't allow that order to be returned from database
-     */
-    private List<Profile> reverseQueryOrder(List<Profile> profiles) {
-        List<Profile> reverseProfiles = new ArrayList<>();
-
-        for (int i = profiles.size() - 1; i >= 0; i -- ) {
-            reverseProfiles.add(profiles.get(i));
-        }
-        return reverseProfiles;
-    }
-
-    private void setupSpinners() {
-        List<String> filters = new ArrayList<String>();
-        filters.add("All");
-        filters.add("Female");
-        filters.add("Male");
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, filters);
-
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerFiler.setAdapter(dataAdapter);
-
-        List<String> sorts = new ArrayList<String>();
-        sorts.add("Created");
-        sorts.add("Alphabetical");
-        sorts.add("Reverse Alphabetical");
-        sorts.add("Age Ascending");
-        sorts.add("Age Descending");
-
-        dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, sorts);
-
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerSort.setAdapter(dataAdapter);
-    }
-
     @Override
     public void onProfileItemClick(Profile profile) {
         Intent i = new Intent(this, ProfileDetailActivity.class);
@@ -213,9 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void setupListeners() {
-        addProfileBtn.setOnClickListener(this);
-
+    private void setupSpinnerFilterAndSortingListeners() {
         spinnerFiler.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -440,6 +354,89 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             Toast.makeText(this, "Profile cannot be created with access to photos", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void deleteProfile(Profile profile) {
+        if (profile.getImageId() == null) {
+            Log.d("photo-delete", "no image to delete");
+            return;
+        }
+        viewModel.deleteImageFromStorage(profile.getImageId()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("photo-delete", "removed image from failed profile save for id ");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.e("photo-delete", "unable to delete image. Would log to error queue and reprocess in prod app for");
+
+            }
+        });
+        //now delete from db
+        viewModel.deleteProfile(profile.getId()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.e("profile-delete", "unable to delete profile");
+            }
+        });
+    }
+
+    private void updateProfile(Profile profile) {
+        viewModel.updateProfile(profile).addOnSuccessListener(MainActivity.this, new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(MainActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
+
+            }
+        })
+                .addOnFailureListener(MainActivity.this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MainActivity.this, "Profile cannot be added", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    /****
+     *
+     * Method needed to sort order in reverse. Firebase doesn't allow that order to be returned from database
+     */
+    private List<Profile> reverseQueryOrder(List<Profile> profiles) {
+        List<Profile> reverseProfiles = new ArrayList<>();
+
+        for (int i = profiles.size() - 1; i >= 0; i -- ) {
+            reverseProfiles.add(profiles.get(i));
+        }
+        return reverseProfiles;
+    }
+
+    private void populateSpinners() {
+        List<String> filters = new ArrayList<String>();
+        filters.add("All");
+        filters.add("Female");
+        filters.add("Male");
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, filters);
+
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFiler.setAdapter(dataAdapter);
+
+        List<String> sorts = new ArrayList<String>();
+        sorts.add("Created");
+        sorts.add("Alphabetical");
+        sorts.add("Reverse Alphabetical");
+        sorts.add("Age Ascending");
+        sorts.add("Age Descending");
+
+        dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, sorts);
+
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerSort.setAdapter(dataAdapter);
     }
 
 }

@@ -10,7 +10,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class FirebaseUtils {
+public class FirebaseDao {
     //Firebase does not sort by desc
     public static final String STORAGE_IMAGE_PATH = "gs://testfirebase-4bf45.appspot.com/images/image-";
 

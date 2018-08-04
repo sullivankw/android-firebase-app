@@ -24,7 +24,7 @@ import android.widget.CheckBox;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.apps.ksullivan.firstfirebaseapp.utils.FirebaseUtils;
+import com.apps.ksullivan.firstfirebaseapp.utils.FirebaseDao;
 import com.apps.ksullivan.firstfirebaseapp.model.Gender;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -77,7 +77,7 @@ public class CreateProfileDialogFragment extends android.support.v4.app.DialogFr
                     return;
                 }
                 UploadTask
-                        uploadTask = FirebaseUtils.getImageFromStorageReference(viewModel.getImageId())
+                        uploadTask = FirebaseDao.getImageFromStorageReference(viewModel.getImageId())
                         .putBytes(viewModel.getBytes());
 
                 uploadTask.addOnFailureListener(new OnFailureListener() {

@@ -8,7 +8,7 @@ import com.apps.ksullivan.firstfirebaseapp.model.Gender;
 import com.apps.ksullivan.firstfirebaseapp.model.Hobby;
 import com.apps.ksullivan.firstfirebaseapp.model.Profile;
 import com.apps.ksullivan.firstfirebaseapp.model.Sort;
-import com.apps.ksullivan.firstfirebaseapp.utils.FirebaseUtils;
+import com.apps.ksullivan.firstfirebaseapp.utils.FirebaseDao;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.Query;
@@ -32,7 +32,7 @@ public class ProfileViewModel extends ViewModel {
     private boolean isCycler;
     private byte[] bytes;
     private MutableLiveData<Query> currentQuery;
-    private FirebaseUtils firebaseUtils;
+    private FirebaseDao firebaseDao;
     //live date is just for observers
 
     public LiveData<Profile> getProfile() {
@@ -204,49 +204,49 @@ public class ProfileViewModel extends ViewModel {
 
     /////////////Firebase DAO Methods//////////////
 
-    public FirebaseUtils getFirebaseUtils() {
-        if (firebaseUtils == null) {
-            firebaseUtils = new FirebaseUtils();
+    public FirebaseDao getFirebaseDao() {
+        if (firebaseDao == null) {
+            firebaseDao = new FirebaseDao();
         }
-        return firebaseUtils;
+        return firebaseDao;
     }
 
     public Query getAllProfiles() {
-        return getFirebaseUtils().getAllProfiles();
+        return getFirebaseDao().getAllProfiles();
     }
 
     public Query getProfilesByGender(Gender gender) {
-        return getFirebaseUtils().getProfilesByGender(gender);
+        return getFirebaseDao().getProfilesByGender(gender);
     }
 
     public Query getProfilesOrderedByGenderAndAscendingName(Gender gender) {
-        return getFirebaseUtils().getProfilesOrderedByGenderAndAscendingName(gender);
+        return getFirebaseDao().getProfilesOrderedByGenderAndAscendingName(gender);
     }
 
     public Query getProfilesOrderedByGenderAndAscendingAge(Gender gender) {
-        return getFirebaseUtils().getProfilesOrderedByGenderAndAscendingAge(gender);
+        return getFirebaseDao().getProfilesOrderedByGenderAndAscendingAge(gender);
     }
 
     public Query getSortedProfiles(Sort sort) {
-        return getFirebaseUtils().getSortedProfiles(sort);
+        return getFirebaseDao().getSortedProfiles(sort);
     }
 
     public Task<Void> saveProfile(String id, Profile profile) {
-        return getFirebaseUtils().saveProfile(id, profile);
+        return getFirebaseDao().saveProfile(id, profile);
     }
 
     public Task<Void> deleteImageFromStorage(String imageId) {
-        return getFirebaseUtils().deleteImageFromStorage(imageId);
+        return getFirebaseDao().deleteImageFromStorage(imageId);
     }
     public Task<Void> updateProfile(Profile profile) {
-        return getFirebaseUtils().updateProfile(profile);
+        return getFirebaseDao().updateProfile(profile);
     }
     public Task<Void> deleteProfile(String id) {
-        return getFirebaseUtils().deleteProfile(id);
+        return getFirebaseDao().deleteProfile(id);
     }
 
     public String getDatabaseKey() {
-        return getFirebaseUtils().getDatabaseKey();
+        return getFirebaseDao().getDatabaseKey();
     }
 
 }

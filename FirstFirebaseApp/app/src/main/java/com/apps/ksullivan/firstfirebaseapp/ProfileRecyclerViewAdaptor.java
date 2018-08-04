@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.apps.ksullivan.firstfirebaseapp.utils.FirebaseUtils;
+import com.apps.ksullivan.firstfirebaseapp.utils.FirebaseDao;
 import com.apps.ksullivan.firstfirebaseapp.model.Gender;
 import com.apps.ksullivan.firstfirebaseapp.model.Profile;
 import com.bumptech.glide.Glide;
@@ -54,7 +54,7 @@ public class ProfileRecyclerViewAdaptor extends RecyclerView.Adapter<ProfileRecy
         final Profile profile = profiles.get(position);
         Glide.with(holder.getProfileImageView().getContext())
                 .using(new FirebaseImageLoader())
-                .load(FirebaseUtils.getImageFromStorageReference(profile.getImageId()))
+                .load(FirebaseDao.getImageFromStorageReference(profile.getImageId()))
                 .into(holder.getProfileImageView());
 
         holder.getGender().setText(profile.getGender().getCode());

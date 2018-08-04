@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.apps.ksullivan.firstfirebaseapp.model.ProfileAction;
-import com.apps.ksullivan.firstfirebaseapp.utils.FirebaseUtils;
+import com.apps.ksullivan.firstfirebaseapp.utils.FirebaseDao;
 import com.apps.ksullivan.firstfirebaseapp.model.Hobby;
 import com.apps.ksullivan.firstfirebaseapp.model.Profile;
 import com.bumptech.glide.Glide;
@@ -83,7 +83,7 @@ public class ProfileDetailActivity extends AppCompatActivity implements View.OnC
         Glide.with(imageView.getContext())
                 .using(new FirebaseImageLoader())
                 //overkill to create a view model only to handle this static ref call
-                .load(FirebaseUtils.getImageFromStorageReference(profile.getImageId()))
+                .load(FirebaseDao.getImageFromStorageReference(profile.getImageId()))
                 .into(imageView);
 
         hobbyCycling = (CheckBox) findViewById(R.id.hobbyCyclingDetail);
