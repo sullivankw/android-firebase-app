@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.apps.ksullivan.firstfirebaseapp.model.ProfileAction;
 import com.apps.ksullivan.firstfirebaseapp.utils.FirebaseUtils;
 import com.apps.ksullivan.firstfirebaseapp.model.Gender;
 import com.apps.ksullivan.firstfirebaseapp.model.Profile;
@@ -31,6 +32,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
@@ -42,16 +44,21 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static com.apps.ksullivan.firstfirebaseapp.ProfileDetailActivity.PROFILE_ACTION;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ProfileRecyclerViewAdaptor.ProfileOnItemClickListener {
 
     private Button addProfileBtn;
     private ProfileViewModel viewModel;
     public static final String PROFILE = "clickedProfile";
+    public static final String PROFILE_TO_RETURN = "returnMeProfile";
     public static final int IMAGE_ID_RESULT = 2232;
+    public static final int PROFILE_TO_RETURN_ID_RESULT= 3567;
     private RecyclerView recyclerView;
     private ProfileRecyclerViewAdaptor adaptor;
     private List<Profile> profiles;
     private Spinner spinnerSort;
+
     private Spinner spinnerFiler;
     private Gender genderFilter;
     private Sort sortBy;
@@ -67,6 +74,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setupListeners();
         setupSpinners();
         configureViewModel();
+    }
+
+    private void deleteProfile(Profile profile) {
+        if (profile.getImageId() == null) {
+            Log.d("photo-delete", "no image to delete");
+            return;
+        }
+        viewModel.deleteImageFromStorage(profile.getImageId()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("photo-delete", "removed image from failed profile save for id ");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.e("photo-delete", "unable to delete image. Would log to error queue and reprocess in prod app for");
+
+            }
+        });
+        //now delete from db
+        viewModel.deleteProfile(profile.getId()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.e("profile-delete", "unable to delete profile");
+            }
+        });
+    }
+
+    private void updateProfile(Profile profile) {
+        viewModel.updateProfile(profile).addOnSuccessListener(MainActivity.this, new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(MainActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
+
+            }
+        })
+                .addOnFailureListener(MainActivity.this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MainActivity.this, "Profile cannot be added", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void setupQuery(Query query) {
@@ -140,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Bundle extras = new Bundle();
         extras.putSerializable(PROFILE, profile);
         i.putExtras(extras);
-        startActivity(i);
+        startActivityForResult(i, PROFILE_TO_RETURN_ID_RESULT);
     }
 
     private void setupRecyclerView() {
@@ -195,8 +249,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     } else {
                         if (sortBy.equals(Sort.AgeDescending) || sortBy.equals(Sort.ReverseAlphabetical)) {
                             shouldReverseQuery = true;
+                        } else {
+                            shouldReverseQuery = false;
                         }
-                        shouldReverseQuery = false;
                         viewModel.setCurrentQuery(viewModel.getSortedProfiles(sortBy));
                     }
                 }
@@ -276,9 +331,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data == null) {
+            Log.e("not-found", "no data returned from startResult");
+            return;
+        }
         if (requestCode == IMAGE_ID_RESULT) {
-            if (data == null || data.getData() == null) {
-                Log.d("not-found", "no image returned to onActivityResult");
+            if (data.getData() == null) {
+                Log.e("not-found", "no image returned to onActivityResult");
                 return;
             }
             Uri uri = data.getData();
@@ -303,12 +362,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e("invalid-bytes", "cannot convert image for storage", e);
             }
         }
+
+        if (requestCode == PROFILE_TO_RETURN_ID_RESULT) {
+            Profile profile = (Profile) data.getSerializableExtra(PROFILE_TO_RETURN);
+            String action = data.getStringExtra(PROFILE_ACTION);
+            if (action.equals(ProfileAction.DELETE.getItem())) {
+                deleteProfile(profile);
+            } else if (action.equals(ProfileAction.EDIT.getItem())) {
+                updateProfile(profile);
+            }
+        }
     }
 
     private void saveNewProfile(Profile profile) {
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
         profile.setCreated(timeStamp);
-        String id = FirebaseUtils.getDatabaseKey();
+        String id = viewModel.getDatabaseKey();
         //values needed for ordering in db
         profile.setId(id);
         //values needed for sorting queries

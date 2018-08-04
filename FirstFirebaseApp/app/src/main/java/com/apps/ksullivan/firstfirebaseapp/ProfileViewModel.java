@@ -228,14 +228,25 @@ public class ProfileViewModel extends ViewModel {
     }
 
     public Query getSortedProfiles(Sort sort) {
-        return FirebaseUtils.getSortedProfiles(sort);
+        return getFirebaseUtils().getSortedProfiles(sort);
     }
 
     public Task<Void> saveProfile(String id, Profile profile) {
-        return FirebaseUtils.saveProfileToDatabase(id, profile);
+        return getFirebaseUtils().saveProfile(id, profile);
     }
 
     public Task<Void> deleteImageFromStorage(String imageId) {
-        return deleteImageFromStorage(imageId);
+        return getFirebaseUtils().deleteImageFromStorage(imageId);
     }
+    public Task<Void> updateProfile(Profile profile) {
+        return getFirebaseUtils().updateProfile(profile);
+    }
+    public Task<Void> deleteProfile(String id) {
+        return getFirebaseUtils().deleteProfile(id);
+    }
+
+    public String getDatabaseKey() {
+        return getFirebaseUtils().getDatabaseKey();
+    }
+
 }

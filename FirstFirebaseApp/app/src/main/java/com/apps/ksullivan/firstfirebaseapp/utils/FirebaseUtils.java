@@ -17,7 +17,7 @@ public class FirebaseUtils {
     public static DatabaseReference getDatabaseReference() {
         return FirebaseDatabase.getInstance().getReference();
     }
-    public static Query getSortedProfiles(Sort sort) {
+    public Query getSortedProfiles(Sort sort) {
         return FirebaseDatabase.getInstance().getReference(("profiles/")).orderByChild(sort.getColumn());
     }
     public Query getAllProfiles() {
@@ -34,10 +34,10 @@ public class FirebaseUtils {
         return FirebaseDatabase.getInstance().getReference(("profiles/")).orderByChild("genderAge")
                 .startAt(gender.getCode()).endAt(gender.getCode() + "\uf8ff");
     }
-    public static String getDatabaseKey() {
+    public String getDatabaseKey() {
         return FirebaseDatabase.getInstance().getReference().child("profiles").push().getKey();
     }
-    public static Task<Void> saveProfileToDatabase(String id, Profile profile) {
+    public Task<Void> saveProfile(String id, Profile profile) {
         return FirebaseDatabase.getInstance().getReference().child("profiles").child(id).setValue(profile);
     }
 
@@ -51,11 +51,15 @@ public class FirebaseUtils {
     public static StorageReference getImageFromStorageReference(String imageId) {
         return FirebaseStorage.getInstance().getReference().child(STORAGE_IMAGE_PATH + imageId);
     }
-    public static Task<Void> deleteImageFromStorage(String imageId) {
+    public Task<Void> deleteImageFromStorage(String imageId) {
         return FirebaseStorage.getInstance().getReference().child(STORAGE_IMAGE_PATH + imageId).delete();
     }
-    public static Task<Void> deleteProfileFromDatabase(String id) {
+    public Task<Void> deleteProfile(String id) {
         return FirebaseDatabase.getInstance().getReference().child("profiles")
                 .child(id).removeValue();
+    }
+    public Task<Void> updateProfile(Profile profile) {
+        return FirebaseDatabase.getInstance().getReference().child("profiles").child(profile.getId())
+                .setValue(profile);
     }
 }

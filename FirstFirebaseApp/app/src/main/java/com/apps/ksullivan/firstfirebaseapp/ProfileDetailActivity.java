@@ -2,25 +2,20 @@ package com.apps.ksullivan.firstfirebaseapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.apps.ksullivan.firstfirebaseapp.model.ProfileAction;
 import com.apps.ksullivan.firstfirebaseapp.utils.FirebaseUtils;
 import com.apps.ksullivan.firstfirebaseapp.model.Hobby;
 import com.apps.ksullivan.firstfirebaseapp.model.Profile;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,9 +23,12 @@ import java.util.Calendar;
 import java.util.List;
 
 import static com.apps.ksullivan.firstfirebaseapp.MainActivity.PROFILE;
+import static com.apps.ksullivan.firstfirebaseapp.MainActivity.PROFILE_TO_RETURN;
+import static com.apps.ksullivan.firstfirebaseapp.MainActivity.PROFILE_TO_RETURN_ID_RESULT;
 
 public class ProfileDetailActivity extends AppCompatActivity implements View.OnClickListener {
-    public static final String PROFILE_TO_UPDATE = "profileToUpdate";
+    public static final String PROFILE_SAVED_INSTANCE = "profileSelected";
+    public static final String PROFILE_ACTION = "action";
     private TextView nameDetail;
     private TextView ageDetail;
     private ImageView imageView;
@@ -52,7 +50,7 @@ public class ProfileDetailActivity extends AppCompatActivity implements View.OnC
         setContentView(R.layout.activity_profile_detail);
 
         if (savedInstanceState != null) {
-            profile = (Profile) savedInstanceState.getSerializable(PROFILE_TO_UPDATE);
+            profile = (Profile) savedInstanceState.getSerializable(PROFILE_SAVED_INSTANCE);
         } else {
             Intent intent = getIntent();
             profile = (Profile) intent.getSerializableExtra(PROFILE);
@@ -84,6 +82,7 @@ public class ProfileDetailActivity extends AppCompatActivity implements View.OnC
         imageView = (ImageView) findViewById(R.id.imageProfileDetail);
         Glide.with(imageView.getContext())
                 .using(new FirebaseImageLoader())
+                //overkill to create a view model only to handle this static ref call
                 .load(FirebaseUtils.getImageFromStorageReference(profile.getImageId()))
                 .into(imageView);
 
@@ -120,58 +119,29 @@ public class ProfileDetailActivity extends AppCompatActivity implements View.OnC
 
     }
 
-    public void removeImageUpload(String imageId) {
-        if (imageId == null) {
-            Log.d("photo-delete", "no image to delete");
-            return;
-        }
-        FirebaseUtils.deleteImageFromStorage(imageId).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d("photo-delete", "removed image from failed profile save for id ");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Log.d("photo-delete", "unable to delete image. Would log to error queue and reprocess in prod app for");
-
-            }
-        });
+    public void passProfileToMainActivityForOperation(ProfileAction action) {
+        Intent i = new Intent(this, MainActivity.class);
+        Bundle extras = new Bundle();
+        extras.putSerializable(PROFILE_TO_RETURN, profile);
+        extras.putString(PROFILE_ACTION, action.getItem());
+        i.putExtras(extras);
+        setResult(PROFILE_TO_RETURN_ID_RESULT,i);
+        finish();
     }
 
     @Override
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.deletePrflBtn:
-                removeImageUpload(profile.getImageId());
-                removeProfile(profile);
+                passProfileToMainActivityForOperation(ProfileAction.DELETE);
                 break;
             case R.id.editPrflBtn:
-                updateProfile();
+                updateHobbies();
+                String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+                profile.setUpdated(timeStamp);
+                passProfileToMainActivityForOperation(ProfileAction.EDIT);
+                break;
         }
-    }
-
-    private void updateProfile() {
-        updateHobbies();
-        String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
-        profile.setUpdated(timeStamp);
-        FirebaseDatabase.getInstance().getReference().child("profiles").child(profile.getId())
-                .setValue(profile).addOnSuccessListener(ProfileDetailActivity.this, new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Toast.makeText(ProfileDetailActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
-
-            }
-        })
-                .addOnFailureListener(ProfileDetailActivity.this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(ProfileDetailActivity.this, "Profile cannot be added", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
     }
 
     private void updateHobbies() {
@@ -195,22 +165,6 @@ public class ProfileDetailActivity extends AppCompatActivity implements View.OnC
             hobbies.add(Hobby.Swimming.getItem());
         }
         profile.setHobbies(hobbies);
-    }
-
-    private void removeProfile(Profile profile) {
-        FirebaseUtils.deleteProfileFromDatabase(profile.getId()).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-
-            }
-        });
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
     }
 
     @Override
