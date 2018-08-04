@@ -7,7 +7,10 @@ import android.arch.lifecycle.ViewModel;
 import com.apps.ksullivan.firstfirebaseapp.model.Gender;
 import com.apps.ksullivan.firstfirebaseapp.model.Hobby;
 import com.apps.ksullivan.firstfirebaseapp.model.Profile;
+import com.apps.ksullivan.firstfirebaseapp.model.Sort;
+import com.apps.ksullivan.firstfirebaseapp.utils.FirebaseUtils;
 import com.google.android.gms.common.util.CollectionUtils;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
@@ -29,6 +32,7 @@ public class ProfileViewModel extends ViewModel {
     private boolean isCycler;
     private byte[] bytes;
     private MutableLiveData<Query> currentQuery;
+    private FirebaseUtils firebaseUtils;
     //live date is just for observers
 
     public LiveData<Profile> getProfile() {
@@ -196,5 +200,42 @@ public class ProfileViewModel extends ViewModel {
 
     public void setCurrentQuery(Query currentQuery) {
         this.currentQuery.setValue(currentQuery);
+    }
+
+    /////////////Firebase DAO Methods//////////////
+
+    public FirebaseUtils getFirebaseUtils() {
+        if (firebaseUtils == null) {
+            firebaseUtils = new FirebaseUtils();
+        }
+        return firebaseUtils;
+    }
+
+    public Query getAllProfiles() {
+        return getFirebaseUtils().getAllProfiles();
+    }
+
+    public Query getProfilesByGender(Gender gender) {
+        return getFirebaseUtils().getProfilesByGender(gender);
+    }
+
+    public Query getProfilesOrderedByGenderAndAscendingName(Gender gender) {
+        return getFirebaseUtils().getProfilesOrderedByGenderAndAscendingName(gender);
+    }
+
+    public Query getProfilesOrderedByGenderAndAscendingAge(Gender gender) {
+        return getFirebaseUtils().getProfilesOrderedByGenderAndAscendingAge(gender);
+    }
+
+    public Query getSortedProfiles(Sort sort) {
+        return FirebaseUtils.getSortedProfiles(sort);
+    }
+
+    public Task<Void> saveProfile(String id, Profile profile) {
+        return FirebaseUtils.saveProfileToDatabase(id, profile);
+    }
+
+    public Task<Void> deleteImageFromStorage(String imageId) {
+        return deleteImageFromStorage(imageId);
     }
 }

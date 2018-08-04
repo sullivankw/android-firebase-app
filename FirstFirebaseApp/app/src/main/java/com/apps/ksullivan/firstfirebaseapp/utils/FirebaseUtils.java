@@ -20,17 +20,17 @@ public class FirebaseUtils {
     public static Query getSortedProfiles(Sort sort) {
         return FirebaseDatabase.getInstance().getReference(("profiles/")).orderByChild(sort.getColumn());
     }
-    public static Query getAllProfiles() {
+    public Query getAllProfiles() {
         return FirebaseDatabase.getInstance().getReference(("profiles/")).orderByKey();
     }
-    public static Query getProfilesByGender(String gender) {
-        return FirebaseDatabase.getInstance().getReference(("profiles/")).orderByChild("gender").equalTo(gender);
+    public Query getProfilesByGender(Gender gender) {
+        return FirebaseDatabase.getInstance().getReference(("profiles/")).orderByChild("gender").equalTo(gender.getItem());
     }
-    public static Query getProfilesOrderedByGenderAndAscendingName(Gender gender) {
+    public Query getProfilesOrderedByGenderAndAscendingName(Gender gender) {
         return FirebaseDatabase.getInstance().getReference(("profiles/")).orderByChild("genderName")
                 .startAt(gender.getCode()).endAt(gender.getCode() + "\uf8ff");
     }
-    public static Query getProfilesOrderedByGenderAndAscendingAge(Gender gender) {
+    public Query getProfilesOrderedByGenderAndAscendingAge(Gender gender) {
         return FirebaseDatabase.getInstance().getReference(("profiles/")).orderByChild("genderAge")
                 .startAt(gender.getCode()).endAt(gender.getCode() + "\uf8ff");
     }

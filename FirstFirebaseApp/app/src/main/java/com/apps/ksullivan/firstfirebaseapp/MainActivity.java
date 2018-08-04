@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (query != null) {
             currentQuery = query;
         } else {
-            currentQuery = (FirebaseUtils.getAllProfiles());
+            currentQuery = viewModel.getAllProfiles();
         }
 
         currentQuery.addValueEventListener(new ValueEventListener() {
@@ -171,33 +171,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //means we have a male or female to filter by
                     if (sortBy == null) {
                         shouldReverseQuery = false;
-                        viewModel.setCurrentQuery(FirebaseUtils.getProfilesByGender(genderFilter.getItem()));
+                        viewModel.setCurrentQuery(viewModel.getProfilesByGender(genderFilter));
                     } else {
                         if (sortBy.equals(Sort.Alphabetical)) {
                             shouldReverseQuery = false;
-                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingName(genderFilter));
+                            viewModel.setCurrentQuery(viewModel.getProfilesOrderedByGenderAndAscendingName(genderFilter));
                         } else if (sortBy.equals(Sort.ReverseAlphabetical)) {
                             shouldReverseQuery = true;
-                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingName(genderFilter));
+                            viewModel.setCurrentQuery(viewModel.getProfilesOrderedByGenderAndAscendingName(genderFilter));
                         } else if (sortBy.equals(Sort.AgeAscending)) {
                             shouldReverseQuery = false;
-                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
+                            viewModel.setCurrentQuery(viewModel.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
                         } else if (sortBy.equals(Sort.AgeDescending)) {
                             shouldReverseQuery = true;
-                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
+                            viewModel.setCurrentQuery(viewModel.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
                         }
                     }
                 } else {
                     //still gotta check that sort isn't on
                     if (sortBy == null) {
                         shouldReverseQuery = false;
-                        viewModel.setCurrentQuery(FirebaseUtils.getAllProfiles());
+                        viewModel.setCurrentQuery(viewModel.getAllProfiles());
                     } else {
                         if (sortBy.equals(Sort.AgeDescending) || sortBy.equals(Sort.ReverseAlphabetical)) {
                             shouldReverseQuery = true;
                         }
                         shouldReverseQuery = false;
-                        viewModel.setCurrentQuery(FirebaseUtils.getSortedProfiles(sortBy));
+                        viewModel.setCurrentQuery(viewModel.getSortedProfiles(sortBy));
                     }
                 }
             }
@@ -219,29 +219,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         } else {
                             shouldReverseQuery = false;
                         }
-                        viewModel.setCurrentQuery(FirebaseUtils.getSortedProfiles(sortBy));
+                        viewModel.setCurrentQuery(viewModel.getSortedProfiles(sortBy));
                     } else {
                         if (sortBy.equals(Sort.Alphabetical)) {
                             shouldReverseQuery = false;
-                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingName(genderFilter));
+                            viewModel.setCurrentQuery(viewModel.getProfilesOrderedByGenderAndAscendingName(genderFilter));
                         } else if (sortBy.equals(Sort.AgeAscending)) {
                             shouldReverseQuery = false;
-                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
+                            viewModel.setCurrentQuery(viewModel.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
                         } else if (sortBy.equals(Sort.ReverseAlphabetical)) {
                             shouldReverseQuery = true;
-                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingName(genderFilter));
+                            viewModel.setCurrentQuery(viewModel.getProfilesOrderedByGenderAndAscendingName(genderFilter));
                         } else if (sortBy.equals(Sort.AgeDescending)) {
                             shouldReverseQuery = true;
-                            viewModel.setCurrentQuery(FirebaseUtils.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
+                            viewModel.setCurrentQuery(viewModel.getProfilesOrderedByGenderAndAscendingAge(genderFilter));
                         }
                     }
                 } else {
                     if (genderFilter == null) {
                         shouldReverseQuery = false;
-                        viewModel.setCurrentQuery(FirebaseUtils.getAllProfiles());
+                        viewModel.setCurrentQuery(viewModel.getAllProfiles());
                     } else {
                         shouldReverseQuery = false;
-                        viewModel.setCurrentQuery(FirebaseUtils.getProfilesByGender(genderFilter.getItem()));
+                        viewModel.setCurrentQuery(viewModel.getProfilesByGender(genderFilter));
                     }
                 }
             }
@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //values needed for sorting queries
         profile.setGenderAge(profile.getGender().getCode() + "_" + profile.getAge());
         profile.setGenderName(profile.getGender().getCode() + "_" + profile.getName());
-        FirebaseUtils.saveProfileToDatabase(id, profile).addOnSuccessListener(MainActivity.this, new OnSuccessListener<Void>() {
+        viewModel.saveProfile(id, profile).addOnSuccessListener(MainActivity.this, new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Toast.makeText(MainActivity.this, "Profile added", Toast.LENGTH_SHORT).show();
@@ -335,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d("photo-delete", "no image to delete");
             return;
         }
-        FirebaseUtils.deleteImageFromStorage(viewModel.getImageId()).addOnSuccessListener(new OnSuccessListener<Void>() {
+        viewModel.deleteImageFromStorage(viewModel.getImageId()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d("photo-delete", "removed image from failed profile save for id ");
