@@ -32,6 +32,9 @@ import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static com.apps.ksullivan.firstfirebaseapp.MainActivity.IMAGE_ID_RESULT;
 
 public class CreateProfileDialogFragment extends android.support.v4.app.DialogFragment implements View.OnClickListener {
@@ -48,6 +51,7 @@ public class CreateProfileDialogFragment extends android.support.v4.app.DialogFr
     private CheckBox hobbyKayaking;
     private TextInputLayout nameTextInputLayout;
     private TextInputLayout ageTextInputLayout;
+    private boolean ageNonNumber;
 
 
     @NonNull
@@ -68,11 +72,10 @@ public class CreateProfileDialogFragment extends android.support.v4.app.DialogFr
         builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //todo validate age is number
                 if (name == null || name.length() > 30
                         || age == null || age.length() > 3
-                        || viewModel.getImageId() == null) {
-                    Toast.makeText(getActivity(), "Can't save profile. Name, age, and profile pic required.",
+                        || viewModel.getImageId() == null || ageNonNumber) {
+                    Toast.makeText(getActivity(), "Can't save profile. Name, numeric age, and profile pic required.",
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -88,7 +91,6 @@ public class CreateProfileDialogFragment extends android.support.v4.app.DialogFr
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // todo should validate only numbers here
                         int intAge = Integer.parseInt(age.getText().toString());
                         viewModel.setAge(intAge);
                         viewModel.setName(name.getText().toString());
@@ -159,22 +161,28 @@ public class CreateProfileDialogFragment extends android.support.v4.app.DialogFr
         age.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.length() < 1 || editable.length() > 3) {
-                    ageTextInputLayout.setError("Age must be within 1 and 3 chars");
+                String input = editable.toString();
+                String regex ="^[0-9]+$";
+                Matcher matcher = Pattern.compile( regex ).matcher(input);
+                if (!matcher.find( ) || (editable.length() < 1 || editable.length() > 3)) {
+                    ageNonNumber = false;
+                    ageTextInputLayout.setError("Age must be a number within 1 and 3 chars");
+                    if (!matcher.find( )) {
+                        ageNonNumber = true;
+                    }
+
                 } else {
+                    ageNonNumber = false;
                     ageTextInputLayout.setError(null);
                 }
-
             }
         });
     }
