@@ -16,6 +16,7 @@ public class Profile implements Serializable {
     private String imageId;
     private String created;
     private String updated;
+    private String userId;
 
     //needed due to firebase query limitations
     private String genderAge;
@@ -95,5 +96,13 @@ public class Profile implements Serializable {
 
     public String getGenderName() {
         return genderName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

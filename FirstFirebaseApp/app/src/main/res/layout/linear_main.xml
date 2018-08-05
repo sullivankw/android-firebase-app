@@ -7,11 +7,43 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        >
+
+        <TextView
+            android:layout_marginStart="6dp"
+            android:id="@+id/loggerText"
+            android:text="Logged In As: "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:id="@+id/user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/loggerText"
+            />
+
+        <Button
+            android:text="Sign Out"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/logoutBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recView"
         android:layout_width="match_parent"
         android:layout_height="320dp"
-        android:scrollbars="vertical"></android.support.v7.widget.RecyclerView>
+        android:scrollbars="vertical">
+    </android.support.v7.widget.RecyclerView>
+
 
     <Button
         android:id="@+id/addProfileBtn"

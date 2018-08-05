@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.apps.ksullivan.firstfirebaseapp.model.ProfileAction;
@@ -42,6 +43,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static com.apps.ksullivan.firstfirebaseapp.LoginActivity.LOGOUT_ID;
+import static com.apps.ksullivan.firstfirebaseapp.LoginActivity.USER_NAME;
+import static com.apps.ksullivan.firstfirebaseapp.LoginActivity.USER_ID;
 import static com.apps.ksullivan.firstfirebaseapp.ProfileDetailActivity.PROFILE_ACTION;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ProfileRecyclerViewAdaptor.ProfileOnItemClickListener {
@@ -62,6 +66,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Sort sortBy;
     private Query currentQuery;
     private boolean shouldReverseQuery;
+    private TextView userTV;
+    private Button signoOutBtn;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +77,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setupViews();
         setupRecyclerView();
         addProfileBtn.setOnClickListener(this);
+        signoOutBtn.setOnClickListener(this);
         setupSpinnerFilterAndSortingListeners();
         populateSpinners();
         configureViewModel();
+
+        userTV.setText(getIntent().getStringExtra(USER_NAME));
+        userId = getIntent().getStringExtra(USER_ID);
+        if (userId == null) {
+            Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+        //todo save this id along with profile insert
+        //only allow users to delete profiles they themselves created
+        // will need to enforce the rule for updates as well
+
     }
 
     private void setupQuery(Query query) {
@@ -126,7 +145,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView = (RecyclerView) findViewById(R.id.recView);
         spinnerSort = (Spinner) findViewById(R.id.sortSpinner);
         spinnerFiler = (Spinner) findViewById(R.id.filterSpinner);
-
+        userTV = (TextView) findViewById(R.id.user);
+        signoOutBtn = (Button) findViewById(R.id.logoutBtn);
     }
 
     private void setupSpinnerFilterAndSortingListeners() {
@@ -297,6 +317,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //values needed for sorting queries
         profile.setGenderAge(profile.getGender().getCode() + "_" + profile.getAge());
         profile.setGenderName(profile.getGender().getCode() + "_" + profile.getName());
+        profile.setUserId(userId);
         viewModel.saveProfile(id, profile).addOnSuccessListener(MainActivity.this, new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -339,6 +360,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 CreateProfileDialogFragment fragment = new CreateProfileDialogFragment();
                 fragment.show(getSupportFragmentManager(), "dialog");
                 break;
+            case R.id.logoutBtn:
+                Intent i = new Intent();
+                setResult(LOGOUT_ID,i);
+                finish();
         }
     }
 

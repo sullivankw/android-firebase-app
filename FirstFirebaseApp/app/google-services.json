@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "715733481930-jufpc0uui4fciamublhn2s3k3lc89plg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.apps.ksullivan.firstfirebaseapp",
+            "certificate_hash": "77984f825adc77edea6324838f31f2a41434009c"
+          }
+        },
+        {
           "client_id": "715733481930-4vak1f9lc4nr4ts83flnu6gir6e90cr0.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "715733481930-4vak1f9lc4nr4ts83flnu6gir6e90cr0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

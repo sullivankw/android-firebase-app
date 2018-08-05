@@ -120,7 +120,7 @@ public class ProfileDetailActivity extends AppCompatActivity implements View.OnC
     }
 
     public void passProfileToMainActivityForOperation(ProfileAction action) {
-        Intent i = new Intent(this, MainActivity.class);
+        Intent i = new Intent();
         Bundle extras = new Bundle();
         extras.putSerializable(PROFILE_TO_RETURN, profile);
         extras.putString(PROFILE_ACTION, action.getItem());
