@@ -3,7 +3,7 @@
 * This uses Firebase as a real time database and storage. A user can view a list of profiles and add to that list   
 * while getting updates to the profile list if changes are made to the profile list at the server or via other users
 
-* Currently auth not required to read/write
+* Auth enforced. Must login with a google account to access
 
 # TODOS 
 
