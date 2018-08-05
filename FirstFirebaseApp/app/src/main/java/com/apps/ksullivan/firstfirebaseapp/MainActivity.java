@@ -88,10 +88,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
             finish();
         }
-        //todo save this id along with profile insert
-        //only allow users to delete profiles they themselves created
-        // will need to enforce the rule for updates as well
-
     }
 
     private void setupQuery(Query query) {
