@@ -15,4 +15,5 @@
 * server side database rules to limit bogus user input values
 * validate incoming method params more thoroughly
 * simplify sorting logic
+* reisize all images to display the same
 
