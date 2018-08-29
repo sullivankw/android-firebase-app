@@ -82,13 +82,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         populateSpinners();
         configureViewModel();
 
-        //Temp disabling auth
         userTV.setText(getIntent().getStringExtra(USER_NAME));
-//        userId = getIntent().getStringExtra(USER_ID);
-//        if (userId == null) {
-//            Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
-//            finish();
-//        }
+        userId = getIntent().getStringExtra(USER_ID);
+        if (userId == null) {
+            Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     private void setupQuery(Query query) {
